@@ -7,7 +7,7 @@ file_object = open("structure.txt","r",encoding="utf-8")
 a= file_object.read()
 print(a)
 """
-result =[]
+child_txt =[]
 class BrickSetSpider(scrapy.Spider):
     name = "brickset_spider"
     start_urls=['https://cso.kmi.open.ac.uk/topics/computer_science#compact']
@@ -18,13 +18,17 @@ class BrickSetSpider(scrapy.Spider):
         i=0
         for title in set_selector.css('.compact-topic'):
             i=i+1
-            print(i)
-            a = title.css('a ::text').get()
-            b.append(a)
+            child = title.css('a ::text').get()
+            b.append(child)
             #yield {'title': title.css('a ::text').get()}
-        global result
-        result = b
-        print(result)
+        global child_txt
+        child_txt = b
+
+        title_page =response.css(".display-5::text").get()
+        no_decendent = response.css(".card-body>p::text").getall()
+        content = response.css(".card-text::text").get()
+        link_wiki=response.css("#wikipedia::attr(href)").get()
+        print(link_wiki)
 """
 class BrickSetSpider(scrapy.Spider):
     name = "brickset_spider"
