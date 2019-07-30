@@ -1,8 +1,7 @@
 import scrapy
-#from scrapy import log
 from scrapy.item import Item
 from scrapy.http import Request
-#from scrapy.contrib.spiders import XMLFeedSpider
+
 
 
 child_txt =['computer_science#compact'] #to check existance
