@@ -1,6 +1,7 @@
 import scrapy
 from scrapy.item import Item
 from scrapy.http import Request
+import time
 
 
 
@@ -32,19 +33,18 @@ def process_NoneType(a):
         return b
 
 class BrickSetSpider(scrapy.Spider):
-    
-    name = "brickset_spider"
-    
-    
+    name = "brickset_spider"  
     url=next_link()
     start_urls=[url]
-    
+   
     def parse(self, response):
         global child_txt
         global child_queue
         global file_write
+
         child_list=" "
         set_selector=response.xpath("//table[1]")
+       
         j=0
         for title in set_selector.css('.compact-topic'):
             
@@ -63,9 +63,32 @@ class BrickSetSpider(scrapy.Spider):
         title_page = process_NoneType(response.css(".display-5::text").get())
         no_decendent = process_NoneType(response.css(".card-body>p::text").getall())
         content = process_NoneType(response.css(".card-text::text").get())
-        link_wiki=process_NoneType(response.css("#wikipedia::attr(href)").get())
+        #childof_ &_label
+        """
+        link_father = process_NoneType(set_selector.css("tr:last-child").getall())
+        print(link_father)
+        """
+        link = response.url
         
+        #External Resources
+        link_resource=" "
+        link_wiki = " "
+        set_selector=response.xpath("//table[2]")
+        link_external=process_NoneType(set_selector.css("span>a::attr(href)").getall()) #response.xpath("//a[contain(@id, wikipedia)]/")
+        try:
+            link_wiki = process_NoneType(response.xpath('//a[contains(@id, "wikipedia")]/@href')[2].get())   #link wiki
+        except:
+            pass
+        
+     
+        if link_external != " ":
+            for i in range(0,len(link_external)-1):
+                link_resource = link_resource +", " + link_external[i]
+        
+        #write to file
         file_write.write("Title: "+title_page)
+        file_write.write('\n')
+        file_write.write("Link: "+ link)
         file_write.write('\n')
         if len(no_decendent)<2:
             file_write.write("Number of Decendent"+" ")
@@ -77,6 +100,8 @@ class BrickSetSpider(scrapy.Spider):
         file_write.write("wiki: " +link_wiki)
         file_write.write('\n')                 
         file_write.write("Child list: " +child_list)
+        file_write.write('\n')
+        file_write.write("External_Resource: " + link_resource)
         file_write.write('\n\n\n')
         #pop head queue
         child_queue.pop(0)
@@ -85,4 +110,3 @@ class BrickSetSpider(scrapy.Spider):
         #print(next_url)
 
         yield Request(next_url)
-  
