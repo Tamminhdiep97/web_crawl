@@ -84,7 +84,21 @@ class BrickSetSpider(scrapy.Spider):
         if link_external != " ":
             for i in range(0,len(link_external)-1):
                 link_resource = link_resource +", " + link_external[i]
-        
+        #experiment area
+
+        selector_child = response.xpath('//div[contains(@id, "compact")]')
+        selector_child_1 = selector_child.xpath('//table[1]/tbody/tr[th[contains(text(),"parent of")]]')
+        selector_alternative_label = selector_child.xpath('//table[1]/tbody/tr[th[contains(text(),"alternative label")]]')
+        selector_parent = selector_child.xpath('//table[1]/tbody/tr[th[contains(text(),"child of")]]')
+        """for title in selector_child_1.css('.compact-topic'):
+            child = title.css('a ::text').get()
+            print(child)
+        """
+        for title in selector_parent.css('.compact-topic'):
+            child = title.css('a ::text').get()
+            print(child)
+
+
         #write to file
         file_write.write("Title: "+title_page)
         file_write.write('\n')
